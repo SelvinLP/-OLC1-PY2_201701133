@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PROYECTO 2 OLC1</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/estilos.css">
+	<link rel="stylesheet" href="css/file-input.css">
+</head>
+<body>
+	<header>
+		<div class="container">
+			<h1>
+				[OLC1]PROYECTO 2
+			</h1>
+		</div>
+		<nav>
+			<ul>
+				<li class="submenu">
+					<a href="#"><span class="icon-rocket"></span>Archivos<span class="caret icon-arrow-down6"></span></a>
+					<ul class="children">
+						<li><a href="#">
+							<label for="archivo" class="subir">Abrir Archivo</label>
+							<input id="archivo" type="file" style='display: none;' />
+							<span class="icon-dot"></span></a>
+						</li>
+						<li><a href="#">
+							<label for="Nuevo_archivo" class="subir">Nuevo Archivo</label>
+							<input id="Nuevo_archivo" type="button" style='display: none;'/>
+							<span class="icon-dot"></span></a>
+						</li>
+						<li><a href="#">
+							<label for="Guarda" class="subir">Guardar Archivo</label>
+							<input id="Guarda" type="button" style='display: none;'/>
+							<span class="icon-dot"></span></a>
+						</li>
+					</ul>
+				</li>
+				<li class="submenu">
+					<a href="#"><span class="icon-rocket"></span>Analisis<span class="caret icon-arrow-down6"></span></a>
+					<ul class="children">
+						<li><a href="#">
+							<label for="boton_L" class="subir">Analisis</label>
+							<input id="boton_L" type='button' style='display: none;' onclick="function Analizar();"/>
+							<span class="icon-dot"></span></a>
+						</li>
+					</ul>
+				</li>
+				<li class="submenu">
+					<a href="#"><span class="icon-rocket"></span>Reportes<span class="caret icon-arrow-down6"></span></a>
+					<ul class="children">
+						<li><a href="#">
+							<label for="R_Lex" class="subir">Reporte Tokens</label>
+							<input id="R_Lex" type='button' style='display: none;' onclick="MostrarReporte_L();"/>
+							<span class="icon-dot"></span></a>
+						</li>
+						<li><a href="#">
+							<label for="R_Error" class="subir">Reporte Errores</label>
+							<input id="R_Error" type='button' style='display: none;' onclick="MostrarReporte_E();"/>
+							<span class="icon-dot"></span></a>
+						</li>
+					</ul>
+				</li>
+				<li class="submenu">
+					<a href="#"><span class="icon-rocket"></span>Descargas<span class="caret icon-arrow-down6"></span></a>
+					<ul class="children">
+						<li><a href="#">
+							<label for="Des_Py" class="subir">Descargar Python</label>
+							<input id="Des_Py" type='button' style='display: none;' onclick="GuardarPy();"/>
+							<span class="icon-dot"></span></a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+	</header>
+	<div class="container">
+		<section class="main row">
+			<div class="col-md-7">
+				<h3>Contenido</h3>
+				<textarea id="CampoTexto" rows="15" cols="65" wrap="off"></textarea>
+			  </div>
+			<div class="col-md-5">
+				<h3>Python</h3>
+				<textarea id="CampoTextoPython" rows="15" cols="50" wrap="off" readonly></textarea>
+			</div>
+		</section>
+
+	</div>
+	<script src="js/custom-file-input.js"></script>
+	<script src="js/jquery.js"></script>
+	<script> src="js/bootstrap.min.js"</script>
+
+	<script src="src/main.js" type="text/javascript"></script>
+
+</body>
+</html>
