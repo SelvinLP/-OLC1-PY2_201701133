@@ -1,4 +1,9 @@
 
+%{
+    let CNodo_Instruccion=require('../AST/Instrucciones/Nodo_Instruccion');
+    let CL_Instruccion=require('../AST/Instrucciones/L_Instrucciones');
+%}
+
 /*------------------------------------------------PARTE LEXICA--------------------------------------------------- */
 %lex
 
@@ -86,7 +91,8 @@
 
 <<EOF>>                        %{  return 'EOF';   %}
 
-.           L_ErrorD.Errores.Add(new N_Error.Nodo_Error("Error Lexico","Caracter Incorrecto: "+yytext,yylineno))
+.                {console.error("Error Lexico No se esperaba el caracter: "+yytext+"  en la linea: "+yylineno);}
+
 
 /lex
 
@@ -97,50 +103,50 @@
 %% 
 
 START:
-    INICIO EOF    {console.log("fin de cadena");}
+    INICIO EOF      {console.log("fin de cadena"); $$=new CL_Instruccion.L_Instrucciones("Raiz","Raiz",yylineno); $$.Agregar($1); return $$.ReturnJson();}
     |error          {console.error('Este es un error sintáctico: ' + yytext + ' en la linea: ' + this.$.first_line + ', en la columna: ' + this.$.first_column);}
 ;
 
+
 INICIO: 
-    tk_import tk_id tk_puntoycoma INICIO                         {console.log("Reconocio import "+$2+" "+$3);}
-    | tk_class tk_id tk_llavei SENTENCIACLASE tk_llaved INICIO       {console.log("Reconocio class "+$2+" "+$3+" "+$5);}  
-    | %empty                
+    tk_import tk_id tk_puntoycoma INICIO                               {$$ = new CNodo_Instruccion.Nodo_Instruccion("import",$2,yylineno); $$.Agregar($4);}
+    | tk_class tk_id tk_llavei SENTENCIA tk_llaved INICIO              {$$ = new CNodo_Instruccion.Nodo_Instruccion("class",$2,yylineno); $$.Agregar($6); $$.AgregarHijo($4);}  
+    | %empty                                                           {$$=null}
 ;
 
-SENTENCIACLASE: 
-    TIPODATO tk_id LISTAID ASIGNACIONVALOR tk_puntoycoma  {console.log("Reconocio un tipo de dato: "+ $1 +" Lista de asignacion: "+ $2+$3);}
-    | tk_id ASIGNACIONVALOR tk_puntoycoma                 {console.log("Reconocio una asignacion de valor "+$1+" "+$2+$3);}
-    | %empty 
+SENTENCIA:
+    TIPODATO ASIGNACIONVALOR tk_puntoycoma SENTENCIA                                               {}
+    | tk_id ASIGOLLAMADA                                                                           {}
+    | tk_if tk_pabre CONDICION tk_pcierra tk_llavei SENTENCIA tk_llaved ELSE SENTENCIA             {}
+    | tk_switch tk_pabre CONDICION tk_pcierra tk_llavei CASE tk_llaved SENTENCIA                   {}
+    | tk_while tk_pabre CONDICION tk_pcierra tk_llavei SENTENCIA tk_llaved SENTENCIA               {}
+    | tk_do tk_llavei SENTENCIA tk_llaved tk_pabre CONDICION tk_pcierra tk_puntoycoma              {}
+    | tk_for tk_pabre PARAMETROFOR tk_pcierra tk_llavei SENTENCIA tk_llaved SENTENCIA              {}
+    | tk_break tk_puntoycoma SENTENCIA                                                             {}
+    | tk_continue tk_puntoycoma SENTENCIA                                                          {}
+    | tk_return tk_puntoycoma SENTENCIA                                                            {}
+    | tk_system tk_punto tk_out tk_punto tk_print tk_pabre IMPRIMIR tk_pcierra tk_puntoycoma SENTENCIA  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","imprimir",yylineno); $$.Agregar($10); $$.AgregarHijo($7);}       
+    | %empty                                                                                            {$$=null}
 ;
 
-
-ASIGNACIONVALOR:
-    tk_soloigual EXPRESION      {console.log("Reconocio Asignacion valor "+$1);}
-    | %empty
+/*------------------ IMPRIMIR-----------------------*/
+IMPRIMIR:
+    VALOR MASEXPRESIONES        {$$=$1}
+    | %empty                    {$$=null}
 ;
 
-EXPRESION:
-    tk_id MASEXPRESIONES                 {console.log("valor expresion: "+$1);}
-    | tk_cadena MASEXPRESIONES           {console.log("valor expresion: "+$1);}
-    | tk_digito MASEXPRESIONES           {console.log("valor expresion: "+$1);}
-    | tk_boolean MASEXPRESIONES          {console.log("valor expresion: "+$1);}
-    | tk_caracter MASEXPRESIONES         {console.log("valor expresion: "+$1);}
-;
-
+/*----------------OTROS-----------------------------*/
 MASEXPRESIONES:
-    tk_sum EXPRESION 
-    | %empty
+    ARITMETICAS VALOR MASEXPRESIONES                                {}
+    | ARITMETICAS tk_pabre LISTA_EXP tk_pcierra MASEXPRESIONES      {}
+    | %empty                                                        {}
 ;
 
-LISTAID:
-    tk_coma tk_id LISTAID    {console.log("lista id: "+$2);}
-    | %empty
-;
-
-TIPODATO: 
-    tk_int          {}
-    | tk_double     {}
-    | tk_boolean    {}
-    | tk_char       {}
-    | tk_string     {}
+/*--------VALORES PRIMITIVOS------------------------*/
+VALOR:
+    tk_id                 {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","id: "+$1,yylineno);}
+    | tk_cadena           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","cadena",yylineno);}
+    | tk_digito           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","digito: "+$1,yylineno);}
+    | tk_booleano         {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","booleano: "+$1,yylineno);}
+    | tk_caracter         {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","caracter",yylineno);}
 ;

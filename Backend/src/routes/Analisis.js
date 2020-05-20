@@ -9,7 +9,7 @@ router.post('/Analizar', function (req, res) {
     var ContEntrada = req.body.contenido;
     var Resultado = parser(ContEntrada);
     C_Errores.Errores.Limpiar();
-    //res.send(Resultado.toString());
+    res.send(JSON.parse(Resultado.toString()));
 });
 
 function parser(texto) {

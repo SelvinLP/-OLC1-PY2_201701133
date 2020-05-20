@@ -23,6 +23,7 @@ func main() {
 	http.Handle("/codemirror/", http.StripPrefix("/codemirror/", http.FileServer(http.Dir("codemirror/"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js/"))))
 	http.Handle("/src/", http.StripPrefix("/src/", http.FileServer(http.Dir("src/"))))
+	http.Handle("/jstree/", http.StripPrefix("/jstree/", http.FileServer(http.Dir("jstree/"))))
 
 	http.HandleFunc("/", index)
 

@@ -60,16 +60,30 @@ function GuardarPy(){
 document.getElementById("Des_Py").onclick=function(){
   GuardarPy();
 }
-
 function Analizar(){
   var texto = document.getElementById('CampoTexto').value;
 
   var url='http://localhost:3080/Analizar';
 
   $.post(url,{contenido:texto},function(data,status){
+    if(status.toString()=="success"){
+      console.log("valor anterior: "+JSON.stringify(arrayCollection));
+      console.log("El resultado es: "+data);
+      console.log("El resultado Convertido: "+JSON.stringify(data));
+      arrayCollection=data;
+
+    //Actualizar
+    $('#html').jstree(true).settings.core.data = arrayCollection; 
+    $('#html').jstree(true).refresh(); 
+    alert("Se ha Analizado Correctamente");
+      
+  }else{
+      alert("Error estado de conexion:"+status);
+  }
   });
 } 
 document.getElementById("boton_L").onclick=function(){
   Analizar();
 }
+
 
