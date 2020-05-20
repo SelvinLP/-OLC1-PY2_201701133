@@ -40,6 +40,7 @@
 
 "system"            return 'tk_system'
 "out"               return 'tk_out'
+"println"           return 'tk_print'
 "print"             return 'tk_print'
 
 //Relacionales
@@ -103,50 +104,85 @@
 %% 
 
 START:
-    INICIO EOF      {console.log("fin de cadena"); $$=new CL_Instruccion.L_Instrucciones("Raiz","Raiz",yylineno); $$.Agregar($1); return $$.ReturnJson();}
-    |error          {console.error('Este es un error sintáctico: ' + yytext + ' en la linea: ' + this.$.first_line + ', en la columna: ' + this.$.first_column);}
+    INICIO EOF                                                          {console.log("fin de cadena"); $$=new CL_Instruccion.L_Instrucciones("Raiz","Raiz",yylineno); 
+                                                                        var L_I = new CNodo_Instruccion.Nodo_Instruccion("Lista Instrucciones","",yylineno); L_I.AgregarHijo($1);
+                                                                        $$.Agregar(L_I); return $$.ReturnJson();}
+    |error                                                              {console.error('Este es un error sintáctico: ' + yytext + ' en la linea: ' + this.$.first_line + ', en la columna: ' + this.$.first_column);}
 ;
 
 
 INICIO: 
-    tk_import tk_id tk_puntoycoma INICIO                               {$$ = new CNodo_Instruccion.Nodo_Instruccion("import",$2,yylineno); $$.Agregar($4);}
-    | tk_class tk_id tk_llavei SENTENCIA tk_llaved INICIO              {$$ = new CNodo_Instruccion.Nodo_Instruccion("class",$2,yylineno); $$.Agregar($6); $$.AgregarHijo($4);}  
-    | %empty                                                           {$$=null}
+    tk_import tk_id tk_puntoycoma INICIO                                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($4);
+                                                                        var Ins= new CNodo_Instruccion.Nodo_Instruccion("import",$2,yylineno); $$.AgregarHijo(Ins);}
+    | tk_class tk_id tk_llavei SENTENCIA tk_llaved INICIO               {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($6);
+                                                                        var Ins = new CNodo_Instruccion.Nodo_Instruccion("class",$2,yylineno); $$.AgregarHijo(Ins); Ins.AgregarHijo($4);}  
+    | %empty                                                            {$$=null}
 ;
 
 SENTENCIA:
-    TIPODATO ASIGNACIONVALOR tk_puntoycoma SENTENCIA                                               {}
+    CUERPO_SENTENCIA                                                    {if($1!=null){$$ = new CNodo_Instruccion.Nodo_Instruccion("Lista Instruccion","",yylineno); $$.AgregarHijo($1);} }
+;
+
+CUERPO_SENTENCIA:
+    TIPODATO ASIGNACIONVALOR tk_puntoycoma CUERPO_SENTENCIA                                               {}
     | tk_id ASIGOLLAMADA                                                                           {}
-    | tk_if tk_pabre CONDICION tk_pcierra tk_llavei SENTENCIA tk_llaved ELSE SENTENCIA             {}
-    | tk_switch tk_pabre CONDICION tk_pcierra tk_llavei CASE tk_llaved SENTENCIA                   {}
-    | tk_while tk_pabre CONDICION tk_pcierra tk_llavei SENTENCIA tk_llaved SENTENCIA               {}
-    | tk_do tk_llavei SENTENCIA tk_llaved tk_pabre CONDICION tk_pcierra tk_puntoycoma              {}
-    | tk_for tk_pabre PARAMETROFOR tk_pcierra tk_llavei SENTENCIA tk_llaved SENTENCIA              {}
-    | tk_break tk_puntoycoma SENTENCIA                                                             {}
-    | tk_continue tk_puntoycoma SENTENCIA                                                          {}
-    | tk_return tk_puntoycoma SENTENCIA                                                            {}
-    | tk_system tk_punto tk_out tk_punto tk_print tk_pabre IMPRIMIR tk_pcierra tk_puntoycoma SENTENCIA  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","imprimir",yylineno); $$.Agregar($10); $$.AgregarHijo($7);}       
-    | %empty                                                                                            {$$=null}
+    | tk_if tk_pabre CONDICION tk_pcierra tk_llavei CUERPO_SENTENCIA tk_llaved ELSE CUERPO_SENTENCIA             {}
+    | tk_switch tk_pabre CONDICION tk_pcierra tk_llavei CASE tk_llaved CUERPO_SENTENCIA                   {}
+    | tk_while tk_pabre CONDICION tk_pcierra tk_llavei CUERPO_SENTENCIA tk_llaved CUERPO_SENTENCIA               {}
+    | tk_do tk_llavei CUERPO_SENTENCIA tk_llaved tk_pabre CONDICION tk_pcierra tk_puntoycoma              {}
+    | tk_for tk_pabre PARAMETROFOR tk_pcierra tk_llavei SENTENCIA tk_llaved CUERPO_SENTENCIA                    {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","for",yylineno); $$.Agregar($8);}
+    | tk_break tk_puntoycoma CUERPO_SENTENCIA                                                                   {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","break",yylineno); $$.Agregar($3);}
+    | tk_continue tk_puntoycoma CUERPO_SENTENCIA                                                                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","continue",yylineno); $$.Agregar($3);}
+    | tk_return tk_puntoycoma CUERPO_SENTENCIA                                                                  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","return",yylineno); $$.Agregar($3);}
+    | tk_system tk_punto tk_out tk_punto tk_print tk_pabre IMPRIMIR tk_pcierra tk_puntoycoma CUERPO_SENTENCIA   {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","imprimir",yylineno); $$.Agregar($10); $$.AgregarHijo($7);}     
+    | %empty                                                                                                    {$$=null}
+;
+
+/*----------------DECLARACION DE FOR ---------------*/
+PARAMETROFOR:
+    TIPODATO tk_id ASIGNACIONVALOR tk_puntoycoma CONDICION tk_puntoycoma tk_id INCYDECRE                        {}
+    |%empty
 ;
 
 /*------------------ IMPRIMIR-----------------------*/
 IMPRIMIR:
-    VALOR MASEXPRESIONES        {$$=$1}
+    VALOR MASEXPRESIONES        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Lista Expresion","",yylineno); $$.AgregarHijo($1); $1.Agregar($2);}
     | %empty                    {$$=null}
 ;
 
 /*----------------OTROS-----------------------------*/
 MASEXPRESIONES:
-    ARITMETICAS VALOR MASEXPRESIONES                                {}
-    | ARITMETICAS tk_pabre LISTA_EXP tk_pcierra MASEXPRESIONES      {}
-    | %empty                                                        {}
+    ARITMETICAS VALOR MASEXPRESIONES                                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno); $$.AgregarHijo($1); $1.Agregar($2); $$.Agregar($3);}
+    | %empty                                                        {$$=null}
 ;
 
 /*--------VALORES PRIMITIVOS------------------------*/
+TIPODATO: 
+    tk_int                  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Tipo","int",yylineno);}
+    | tk_double             {$$ = new CNodo_Instruccion.Nodo_Instruccion("Tipo","double",yylineno);}
+    | tk_boolean            {$$ = new CNodo_Instruccion.Nodo_Instruccion("Tipo","boolean",yylineno);}
+    | tk_char               {$$ = new CNodo_Instruccion.Nodo_Instruccion("Tipo","char",yylineno);}
+    | tk_string             {$$ = new CNodo_Instruccion.Nodo_Instruccion("Tipo","string",yylineno);}
+;
+
 VALOR:
-    tk_id                 {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","id: "+$1,yylineno);}
-    | tk_cadena           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","cadena",yylineno);}
-    | tk_digito           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","digito: "+$1,yylineno);}
-    | tk_booleano         {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","booleano: "+$1,yylineno);}
-    | tk_caracter         {$$ = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","caracter",yylineno);}
+    tk_id                   {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno);
+                            var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","id: "+$1,yylineno); $$.AgregarHijo(Exp);}
+    | tk_cadena             {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno);
+                            var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","cadena",yylineno); $$.AgregarHijo(Exp);}
+    | tk_digito             {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno);
+                            var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","digito: "+$1,yylineno); $$.AgregarHijo(Exp);}
+    | tk_booleano           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno);
+                            var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","booleano: ",yylineno); $$.AgregarHijo(Exp);}
+    | tk_caracter           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno);
+                            var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","caracter",yylineno); $$.AgregarHijo(Exp);}
+;
+
+ARITMETICAS:
+    tk_sum                  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Aritmetica","+",yylineno);}
+    | tk_res                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Aritmetica","-",yylineno);}
+    | tk_mul                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Aritmetica","*",yylineno);}
+    | tk_div                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Aritmetica","/",yylineno);}
+    | tk_pot                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Aritmetica","^",yylineno);}
+    | tk_mod                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Aritmetica","%",yylineno);}
 ;
