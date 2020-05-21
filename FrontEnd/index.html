@@ -8,6 +8,12 @@
 	<link rel="stylesheet" href="css/estilos.css">
 	<link rel="stylesheet" href="css/file-input.css">
 
+	<link rel="stylesheet" href="codemirror/lib/codemirror.css">
+	<script src="codemirror/lib/codemirror.js"></script>
+	<script src="./codemirror/mode/xml/xml.js"></script>
+	<link rel=stylesheet href="./codemirror/theme/eclipse.css">
+	<script src="./codemirror/mode/clike/clike.js"></script>
+
 	<style>
 		.demo { overflow:auto; border:1px solid silver; min-height:100px; }
 	</style>
@@ -32,8 +38,18 @@
 							<span class="icon-dot"></span></a>
 						</li>
 						<li><a href="#">
+							<label for="archivoC" class="subir">Abrir Archivo Copia</label>
+							<input id="archivoC" type="file" style='display: none;' />
+							<span class="icon-dot"></span></a>
+						</li>
+						<li><a href="#">
 							<label for="Nuevo_archivo" class="subir">Nuevo Archivo</label>
 							<input id="Nuevo_archivo" type="button" style='display: none;'/>
+							<span class="icon-dot"></span></a>
+						</li>
+						<li><a href="#">
+							<label for="Nuevo_archivo2" class="subir">Nuevo Archivo Copia</label>
+							<input id="Nuevo_archivo2" type="button" style='display: none;'/>
 							<span class="icon-dot"></span></a>
 						</li>
 						<li><a href="#">
@@ -57,11 +73,6 @@
 					<a href="#"><span class="icon-rocket"></span>Reportes<span class="caret icon-arrow-down6"></span></a>
 					<ul class="children">
 						<li><a href="#">
-							<label for="R_Error" class="subir">Mostrar AST</label>
-							<input id="R_Error" type='button' style='display: none;' onclick="resfreshJSTree();"/>
-							<span class="icon-dot"></span></a>
-						</li>
-						<li><a href="#">
 							<label for="R_Error" class="subir">Reporte Errores</label>
 							<input id="R_Error" type='button' style='display: none;' onclick="MostrarReporte_E();"/>
 							<span class="icon-dot"></span></a>
@@ -72,7 +83,7 @@
 					<a href="#"><span class="icon-rocket"></span>Descargas<span class="caret icon-arrow-down6"></span></a>
 					<ul class="children">
 						<li><a href="#">
-							<label for="Des_Py" class="subir">Descargar Python</label>
+							<label for="Des_Py" class="subir">Descargar Reporte</label>
 							<input id="Des_Py" type='button' style='display: none;' onclick="GuardarPy();"/>
 							<span class="icon-dot"></span></a>
 						</li>
@@ -83,13 +94,13 @@
 	</header>
 	<div class="container">
 		<section class="main row">
-			<div class="col-md-7">
+			<div class="col-md-6">
 				<h3>Original</h3>
-				<textarea id="CampoTexto" rows="15" cols="65" wrap="off"></textarea>
+				<textarea id="CampoTexto" rows="15" cols="50" wrap="off"></textarea>
 			  </div>
-			<div class="col-md-5">
+			<div class="col-md-6">
 				<h3>Copia</h3>
-				<textarea id="CampoTextoPython" rows="15" cols="50" wrap="off" readonly></textarea>
+				<textarea id="CampoTextoPython" rows="15" cols="50" wrap="off" ></textarea>
 			</div>
 		</section>
 

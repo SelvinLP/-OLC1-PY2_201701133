@@ -26,5 +26,13 @@ class Errores extends Array<Nodo_Error>{
             this.prototype.pop();
         }
     }
+
+    public static RetornarErrores():String{
+        var cont="";
+        for(var pos=0;pos<this.prototype.length;pos++){
+            cont+=","+pos;
+        }
+        return cont;
+    }
 }
 export{Errores};

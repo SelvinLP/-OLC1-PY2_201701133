@@ -1,8 +1,25 @@
+//codemirror en campos
+var editor = CodeMirror.fromTextArea(document.getElementById("CampoTexto"), {
+  lineNumbers: true,
+  mode: "text/x-java",
+  matchBrackets: true
+});
+editor.setSize(550, 400);
+//campo2
+var editor2 = CodeMirror.fromTextArea(document.getElementById("CampoTextoPython"), {
+  lineNumbers: true,
+  mode: "text/x-java",
+  matchBrackets: true
+});
+editor2.setSize(550, 400);
+
+
 //Evento
 window.addEventListener('load', inicio, false);
 //Funciones
 function inicio() {
     document.getElementById('archivo').addEventListener('change', cargar, false); 
+    document.getElementById('archivoC').addEventListener('change', cargar2, false); 
 }
 
 function cargar(ev) {   
@@ -11,19 +28,37 @@ function cargar(ev) {
     arch.addEventListener('load',leer,false);
     arch.readAsText(ev.target.files[0]);
 }
+function cargar2(ev) {   
+  var arch=new FileReader();
+  //Cargar Archivos
+  arch.addEventListener('load',leer2,false);
+  arch.readAsText(ev.target.files[0]);
+}
 
 function leer(ev) {
   Limpiar();
   //Agregamos
-  document.getElementById('CampoTexto').value=ev.target.result;
+  editor.getDoc().setValue(ev.target.result);
+}
+function leer2(ev) {
+  Limpiar();
+  //Agregamos
+  editor2.getDoc().setValue(ev.target.result);
 }
 
 function Limpiar(){
   //Limpiamos
-  document.getElementById('CampoTexto').value="";
+  editor.getDoc().setValue('');
 }
 document.getElementById("Nuevo_archivo").onclick=function(){
   Limpiar();
+}
+function LimpiarCopia(){
+  //Limpiamos
+  editor2.getDoc().setValue('');
+}
+document.getElementById("Nuevo_archivo2").onclick=function(){
+  LimpiarCopia();
 }
 
 
@@ -61,8 +96,8 @@ document.getElementById("Des_Py").onclick=function(){
   GuardarPy();
 }
 function Analizar(){
-  var texto = document.getElementById('CampoTexto').value;
-
+  var texto = editor.getValue();
+  console.log(texto);
   var url='http://localhost:3080/Analizar';
 
   $.post(url,{contenido:texto},function(data,status){

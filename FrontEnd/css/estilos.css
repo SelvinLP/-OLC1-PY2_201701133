@@ -1,4 +1,7 @@
-
+.CodeMirror {
+	font-family: Arial, monospace;
+	font-size: 12px;
+	}
 header{
     background:#2c3e50;
     color: #fff;

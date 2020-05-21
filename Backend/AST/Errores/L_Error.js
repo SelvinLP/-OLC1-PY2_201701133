@@ -18,10 +18,11 @@ var Errores = /** @class */ (function (_super) {
     function Errores() {
         return _super.call(this) || this;
     }
-    Errores.add = function (err) {
+    Errores.Add = function (err) {
         this.prototype.push(err);
     };
-    Errores.verificarerror = function () {
+    Errores.Verificarerror = function () {
+        //Verificacion de Error
         if (this.prototype.length > 0) {
             return "Hay Errores";
         }
@@ -35,6 +36,13 @@ var Errores = /** @class */ (function (_super) {
             //Borramos
             this.prototype.pop();
         }
+    };
+    Errores.RetornarErrores = function () {
+        var cont = "";
+        for (var pos = 0; pos < this.prototype.length; pos++) {
+            cont += "," + pos;
+        }
+        return cont;
     };
     return Errores;
 }(Array));

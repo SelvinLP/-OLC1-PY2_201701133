@@ -2,6 +2,8 @@
 %{
     let CNodo_Instruccion=require('../AST/Instrucciones/Nodo_Instruccion');
     let CL_Instruccion=require('../AST/Instrucciones/L_Instrucciones');
+    let CL_Error=require('../AST/Errores/L_Error');
+    let CNodoError=require('../AST/Errores/Nodo_Error');
 %}
 
 /*------------------------------------------------PARTE LEXICA--------------------------------------------------- */
@@ -74,10 +76,10 @@
 
 //Exprsiones Regulares
 [-]?[0-9]+("."[0-9]+)?             return 'tk_digito'
-"true"|"false"                 return 'tk_booleano'
-[\"]([^\"\n]|(\\\"))*[\"]      return 'tk_cadena'
-[\'][a-zA-Z| ][\']               return 'tk_caracter'
-[a-zA-Z]+([a-zA-Z]|[0-9]|_)*   return 'tk_id'
+"true"|"false"                     return 'tk_booleano'
+[\"]([^\"\n]|(\\\"))*[\"]          return 'tk_cadena'
+[\'][a-zA-Z| ][\']                 return 'tk_caracter'
+[a-zA-Z]+([a-zA-Z]|[0-9]|_)*       return 'tk_id'
 
 //Operaciones Aritmeticas
 "+"     return 'tk_sum'
@@ -91,7 +93,7 @@
 
 <<EOF>>                        %{  return 'EOF';   %}
 
-.                {console.error("Error Lexico No se esperaba el caracter: "+yytext+"  en la linea: "+yylineno);}
+.                {CL_Error.Errores.add(new CNodoError.Nodo_Error("Error Lexico","No se esperaba el caracter: "+yytext,yylineno))}
 
 
 /lex
