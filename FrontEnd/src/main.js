@@ -67,8 +67,6 @@ function Analizar(){
 
   $.post(url,{contenido:texto},function(data,status){
     if(status.toString()=="success"){
-      console.log("valor anterior: "+JSON.stringify(arrayCollection));
-      console.log("El resultado es: "+data);
       console.log("El resultado Convertido: "+JSON.stringify(data));
       arrayCollection=data;
 
