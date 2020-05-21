@@ -7,8 +7,6 @@
 /*------------------------------------------------PARTE LEXICA--------------------------------------------------- */
 %lex
 
-%options case-insensitive
-
 %%
 
 //Comentarios
@@ -16,11 +14,11 @@
 "/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/"  /*Comentario multilinea*/
 
 //Tipos de Datos
-"int"               return 'tk_int'
-"double"            return 'tk_double'
-"boolean"           return 'tk_boolean'
-"char"              return 'tk_char'
-"string"            return 'tk_string'
+"int"|"Int"                   return 'tk_int'
+"double"|"Double"             return 'tk_double'
+"boolean"|"Boolean"           return 'tk_boolean'
+"char"|"Char"                 return 'tk_char'
+"string"|"String"             return 'tk_string'
 
 //Palabras Reservadas
 "class"             return 'tk_class'
@@ -38,10 +36,10 @@
 "break"             return 'tk_break'
 "void"              return 'tk_void'
 
-"system"            return 'tk_system'
-"out"               return 'tk_out'
-"println"           return 'tk_print'
-"print"             return 'tk_print'
+"system"|"System"            return 'tk_system'
+"out"                        return 'tk_out'
+"println"                    return 'tk_print'
+"print"                      return 'tk_print'
 
 //Relacionales
 "=="    return 'tk_igual'
@@ -61,13 +59,6 @@
 "++"    return 'tk_inc'
 "--"    return 'tk_dec'
 
-//Operaciones Aritmeticas
-"+"     return 'tk_sum'
-"-"     return 'tk_res'
-"*"     return 'tk_mul'
-"/"     return 'tk_div'
-"^"     return 'tk_pot'
-"%"     return 'tk_mod'
 
 //Otros
 "{"     return 'tk_llavei';
@@ -82,12 +73,19 @@
 
 
 //Exprsiones Regulares
-[0-9]+("."[0-9]+)?             return 'tk_digito'
+[-]?[0-9]+("."[0-9]+)?             return 'tk_digito'
 "true"|"false"                 return 'tk_booleano'
 [\"]([^\"\n]|(\\\"))*[\"]      return 'tk_cadena'
-[\'][a-zA-Z][\']               return 'tk_caracter'
+[\'][a-zA-Z| ][\']               return 'tk_caracter'
 [a-zA-Z]+([a-zA-Z]|[0-9]|_)*   return 'tk_id'
 
+//Operaciones Aritmeticas
+"+"     return 'tk_sum'
+"-"     return 'tk_res'
+"*"     return 'tk_mul'
+"/"     return 'tk_div'
+"^"     return 'tk_pot'
+"%"     return 'tk_mod'
 
 [ \t\r\n\f]                    %{ /*se ignoran*/ %}
 
@@ -115,18 +113,30 @@ START:
 INICIO: 
     tk_import tk_id tk_puntoycoma INICIO                                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($4);
                                                                         var Ins= new CNodo_Instruccion.Nodo_Instruccion("import",$2,yylineno); $$.AgregarHijo(Ins);}
-    | tk_class tk_id tk_llavei SENTENCIA tk_llaved INICIO               {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($6);
+    | tk_class tk_id tk_llavei METODOS tk_llaved INICIO                 {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($6);
                                                                         var Ins = new CNodo_Instruccion.Nodo_Instruccion("class",$2,yylineno); $$.AgregarHijo(Ins); Ins.AgregarHijo($4);}  
     | %empty                                                            {$$=null}
 ;
+
+METODOS:
+    tk_void tk_id tk_pabre PARAMETROFUNCION tk_pcierra tk_llavei SENTENCIA tk_llaved METODOS        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Metodo",$2,yylineno); $$.AgregarHijo($4); 
+                                                                                                    if($4!=null){$4.Agregar($7);}else{ $$.AgregarHijo($7);} $$.Agregar($9);
+                                                                                                     }
+    | TIPODATO tk_id tk_pabre PARAMETROFUNCION tk_pcierra tk_llavei SENTENCIA tk_llaved METODOS     {$$ = new CNodo_Instruccion.Nodo_Instruccion("Funcion",$2,yylineno); $$.AgregarHijo($4); 
+                                                                                                    if($4!=null){$4.Agregar($7);}else{ $$.AgregarHijo($7);} $$.Agregar($9);
+                                                                                                     }
+    | %empty                                                                                        {$$=null;}
+;
+
 
 SENTENCIA:
     CUERPO_SENTENCIA                                                    {if($1!=null){$$ = new CNodo_Instruccion.Nodo_Instruccion("Lista Instruccion","",yylineno); $$.AgregarHijo($1);} }
 ;
 
 CUERPO_SENTENCIA:
-    TIPODATO tk_id ASIGNACIONVALOR tk_puntoycoma CUERPO_SENTENCIA                                                   {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","Declaracion",yylineno); $$.AgregarHijo($1); 
-                                                                                                                    var tem=new CNodo_Instruccion.Nodo_Instruccion("Identificador",$2,yylineno); $1.Agregar(tem); tem.Agregar($3); $$.Agregar($5);}
+    TIPODATO tk_id LISTAID ASIGNACIONVALOR tk_puntoycoma CUERPO_SENTENCIA                                           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","Declaracion",yylineno); $$.AgregarHijo($1); 
+                                                                                                                    var tem=new CNodo_Instruccion.Nodo_Instruccion("Identificador",$2,yylineno); $1.Agregar(tem); tem.Agregar($3);
+                                                                                                                    if($3!=null){$3.Agregar($4);}else{tem.Agregar($4);} $$.Agregar($6);}
     | tk_id ASIGOLLAMADA CUERPO_SENTENCIA                                                                           {$$=$2; $$.Agregar($3);}
     | tk_if tk_pabre CONDICION tk_pcierra tk_llavei SENTENCIA tk_llaved ELSE CUERPO_SENTENCIA                       {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","if",yylineno); $$.AgregarHijo($3); $3.Agregar($6); $6.Agregar($8); $$.Agregar($9); }
     | tk_switch tk_pabre CONDICION tk_pcierra tk_llavei CASE tk_llaved CUERPO_SENTENCIA                             {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","switch",yylineno); $$.AgregarHijo($3); $3.Agregar($6); $$.Agregar($8);}
@@ -136,7 +146,7 @@ CUERPO_SENTENCIA:
     | tk_for tk_pabre PARAMETROFOR tk_pcierra tk_llavei SENTENCIA tk_llaved CUERPO_SENTENCIA                        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","for",yylineno); $$.AgregarHijo($3); $3.Agregar($6); $$.Agregar($8);}
     | tk_break tk_puntoycoma CUERPO_SENTENCIA                                                                       {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","break",yylineno); $$.Agregar($3);}
     | tk_continue tk_puntoycoma CUERPO_SENTENCIA                                                                    {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","continue",yylineno); $$.Agregar($3);}
-    | tk_return tk_puntoycoma CUERPO_SENTENCIA                                                                      {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","return",yylineno); $$.Agregar($3);}
+    | tk_return RETURNVALOR tk_puntoycoma CUERPO_SENTENCIA                                                          {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","return",yylineno); $$.AgregarHijo($2); $$.Agregar($4);}
     | tk_system tk_punto tk_out tk_punto tk_print tk_pabre IMPRIMIR tk_pcierra tk_puntoycoma CUERPO_SENTENCIA       {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","imprimir",yylineno); $$.Agregar($10); $$.AgregarHijo($7);}     
     | %empty                                                                                                        {$$=null}
 ;
@@ -145,6 +155,19 @@ ASIGOLLAMADA:
     tk_pabre LISTA_EXP tk_pcierra tk_puntoycoma                                              {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","Llamar Funcion",yylineno); $$.AgregarHijo($2);} 
     | tk_soloigual VALOR MASEXPRESIONES tk_puntoycoma                                        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Asignar Valor","",yylineno); $$.AgregarHijo($2); $2.Agregar($3);}
 
+;
+
+/*----------------LISTA DE PARAMETRO----------------*/
+PARAMETROFUNCION:
+    TIPODATO tk_id VARIASDECLA    {$$ = new CNodo_Instruccion.Nodo_Instruccion("Parametros","",yylineno); $$.AgregarHijo($1); 
+                                    var nw=new CNodo_Instruccion.Nodo_Instruccion("Identificador",$2,yylineno); $1.Agregar(nw); nw.Agregar($3); }
+    | %empty                        {$$=null;}
+;
+
+VARIASDECLA:
+    tk_coma TIPODATO tk_id VARIASDECLA      {$$ = new CNodo_Instruccion.Nodo_Instruccion("Mas Declaraciones","",yylineno); $$.AgregarHijo($2);
+                                            var nw=new CNodo_Instruccion.Nodo_Instruccion("Identificador",$3,yylineno); $2.Agregar(nw); nw.Agregar($4);}
+    | %empty                                {$$=null;}
 ;
 
 /*----------------LISTA DE EXPRESIONES--------------*/
@@ -156,6 +179,12 @@ LISTA_EXP:
 LISTA_EXPRESIONES:
     tk_coma VALOR LISTA_EXPRESIONES                     {$$=$2; $$.Agregar($3);}
     | %empty                                            {$$=null}
+;
+
+/*----------------RETORNO DE VALORES----------------*/
+RETURNVALOR:
+    VALOR MASEXPRESIONES    {$$=$1; $1.Agregar($2);}
+    | %empty                {$$=null;}
 ;
 
 /*----------------DECLARACION DE FOR ---------------*/
@@ -213,6 +242,12 @@ MASEXPRESIONES:
 ASIGNACIONVALOR:
     tk_soloigual VALOR MASEXPRESIONES                               {$$ = new CNodo_Instruccion.Nodo_Instruccion("Asignar Valor","",yylineno); $$.AgregarHijo($2); $2.Agregar($3);}
     | %empty
+;
+
+LISTAID:
+    tk_coma tk_id LISTAID       { $$=new CNodo_Instruccion.Nodo_Instruccion("Mas Identificadores","",yylineno); 
+                                var lt= new CNodo_Instruccion.Nodo_Instruccion("Identificador",$2,yylineno); $$.AgregarHijo(lt); lt.Agregar($3); }
+    | %empty                    {$$=null;}
 ;
 
 /*--------VALORES PRIMITIVOS------------------------*/
