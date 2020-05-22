@@ -97,12 +97,10 @@ document.getElementById("Des_Py").onclick=function(){
 }
 function Analizar(){
   var texto = editor.getValue();
-  console.log(texto);
   var url='http://localhost:3080/Analizar';
 
   $.post(url,{contenido:texto},function(data,status){
     if(status.toString()=="success"){
-      console.log("El resultado Convertido: "+JSON.stringify(data));
       arrayCollection=data;
 
     //Actualizar
@@ -118,5 +116,22 @@ function Analizar(){
 document.getElementById("boton_L").onclick=function(){
   Analizar();
 }
+//Copia
+function AnalizarCopia(){
+  var url='http://localhost:3080/Copia';
 
+  $.post(url,{contenido:""},function(data,status){
+    if(status.toString()=="success"){
+      var Contenido2=data;
+
+    alert("Se ha Analizado la copia Correctamente");
+      
+  }else{
+      alert("Error estado de conexion:"+status);
+  }
+  });
+} 
+document.getElementById("boton_Copia").onclick=function(){
+  AnalizarCopia();
+}
 

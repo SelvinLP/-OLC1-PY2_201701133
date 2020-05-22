@@ -93,7 +93,7 @@
 
 <<EOF>>                        %{  return 'EOF';   %}
 
-.                {CL_Error.Errores.add(new CNodoError.Nodo_Error("Error Lexico","No se esperaba el caracter: "+yytext,yylineno))}
+.                               {CL_Error.Errores.add(new CNodoError.Nodo_Error("Lexico","Caracter no definido: "+yytext,yylineno))}
 
 
 /lex
@@ -108,7 +108,6 @@ START:
     INICIO EOF                                                          {console.log("fin de cadena"); $$=new CL_Instruccion.L_Instrucciones("Raiz","Raiz",yylineno); 
                                                                         var L_I = new CNodo_Instruccion.Nodo_Instruccion("Lista Instrucciones","",yylineno); L_I.AgregarHijo($1);
                                                                         $$.Agregar(L_I); return $$.ReturnJson();}
-    |error                                                              {console.error('Este es un error sintáctico: ' + yytext + ' en la linea: ' + this.$.first_line + ', en la columna: ' + this.$.first_column);}
 ;
 
 
@@ -156,7 +155,7 @@ CUERPO_SENTENCIA:
 ASIGOLLAMADA:
     tk_pabre LISTA_EXP tk_pcierra tk_puntoycoma                                              {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","Llamar Funcion",yylineno); $$.AgregarHijo($2);} 
     | tk_soloigual VALOR MASEXPRESIONES tk_puntoycoma                                        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Asignar Valor","",yylineno); $$.AgregarHijo($2); $2.Agregar($3);}
-
+    | error ASIGOLLAMADA                                                                     { CL_Error.Errores.add(new CNodoError.Nodo_Error("Sintactico","Se esperaba: "+$1,yylineno)); $$=$2}
 ;
 
 /*----------------LISTA DE PARAMETRO----------------*/
@@ -204,6 +203,7 @@ ELSE:
 ELSEIF:
     tk_llavei SENTENCIA tk_llaved                                               {$$=$2;}
     | tk_if tk_pabre CONDICION tk_pcierra tk_llavei SENTENCIA tk_llaved ELSE    {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","if",yylineno); $$.AgregarHijo($3); $3.Agregar($6); $6.Agregar($8);}
+    | error ELSEIF                                                              { CL_Error.Errores.add(new CNodoError.Nodo_Error("Sintactico","Se esperaba: "+$1,yylineno)); $$=$2}
 ;
 
 
@@ -284,21 +284,22 @@ ARITMETICAS:
 ;
 
 RELACIONALES:
-    tk_igual           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","==",yylineno);}
-    | tk_dif           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","!=",yylineno);}
-    | tk_may           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional",">",yylineno);}
-    | tk_mayIgual      {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional",">=",yylineno);}
-    | tk_men           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","<",yylineno);}
-    | tk_menIgual      {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","<=",yylineno);}
+    tk_igual                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","==",yylineno);}
+    | tk_dif                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","!=",yylineno);}
+    | tk_may                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional",">",yylineno);}
+    | tk_mayIgual           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional",">=",yylineno);}
+    | tk_men                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","<",yylineno);}
+    | tk_menIgual           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Relacional","<=",yylineno);}
 ;
 
 LOGICOS:
-    tk_and        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Logico","and",yylineno);}
-    | tk_or       {$$ = new CNodo_Instruccion.Nodo_Instruccion("Logico","or",yylineno);}
-    | tk_not      {$$ = new CNodo_Instruccion.Nodo_Instruccion("Logico","not",yylineno);}
+    tk_and                  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Logico","and",yylineno);}
+    | tk_or                 {$$ = new CNodo_Instruccion.Nodo_Instruccion("Logico","or",yylineno);}
+    | tk_not                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Logico","not",yylineno);}
 ;
 
 INCYDECRE:
     tk_inc                  {$$ = new CNodo_Instruccion.Nodo_Instruccion("Incremento","++",yylineno);}
     | tk_dec                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Decremento","--",yylineno);}
+    | error INCYDECRE       { CL_Error.Errores.add(new CNodoError.Nodo_Error("Sintactico","Se esperaba: "+$1,yylineno)); $$=$2}
 ;
