@@ -4,10 +4,10 @@ class Nodo_Instruccion implements Instruccion{
 
     private Fila:Number;
     private Id:Number;
-    private Nombre:String;
-    private Tipo:String;
-    private JsonHermano;
-    private JsonHijo;
+    public Nombre:String;
+    public Tipo:String;
+    public JsonHermano;
+    public JsonHijo;
 
     constructor(NTipo:String,NNombre:String,NFila:Number){
         this.Tipo=NTipo;

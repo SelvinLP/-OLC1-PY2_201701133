@@ -1,8 +1,9 @@
 export class Nodo_Copia {
 
-    private Nombre:string;
-    private Tipo:string;
-    private Hijos:Nodo_Copia[]=[];
+    public Nombre:string;
+    public Tipo:string;
+    public Hijos:Nodo_Copia[]=[];
+    public Hermano:Nodo_Copia;
 
     constructor(nom:string,descripcion:string){
         this.Nombre=nom;
@@ -10,15 +11,14 @@ export class Nodo_Copia {
     }
 
     public addChild(nuevoH:Nodo_Copia){
-        this.Hijos.push(nuevoH);
+        if(nuevoH!=null){
+            this.Hijos.push(nuevoH);
+        }
     }
-    
-    public getTipo():string{
-        return this.Tipo;
-    }
-
-    public getNombre():string{
-        return this.Nombre;
+    public addHermano(nuevoH:Nodo_Copia){
+        if(nuevoH!=null){
+            this.Hermano=nuevoH;
+        }
     }
 
 }

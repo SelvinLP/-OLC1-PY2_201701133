@@ -41,7 +41,7 @@ function leer(ev) {
   editor.getDoc().setValue(ev.target.result);
 }
 function leer2(ev) {
-  Limpiar();
+  LimpiarCopia();
   //Agregamos
   editor2.getDoc().setValue(ev.target.result);
 }
@@ -95,6 +95,8 @@ function GuardarPy(){
 document.getElementById("Des_Py").onclick=function(){
   GuardarPy();
 }
+
+
 function Analizar(){
   var texto = editor.getValue();
   var url='http://localhost:3080/Analizar';
@@ -102,11 +104,10 @@ function Analizar(){
   $.post(url,{contenido:texto},function(data,status){
     if(status.toString()=="success"){
       arrayCollection=data;
-
-    //Actualizar
-    $('#html').jstree(true).settings.core.data = arrayCollection; 
-    $('#html').jstree(true).refresh(); 
-    alert("Se ha Analizado Correctamente");
+        //Actualizar
+        $('#html').jstree(true).settings.core.data = arrayCollection; 
+        $('#html').jstree(true).refresh(); 
+      alert("Se ha Analizado Correctamente");
       
   }else{
       alert("Error estado de conexion:"+status);
@@ -118,11 +119,12 @@ document.getElementById("boton_L").onclick=function(){
 }
 //Copia
 function AnalizarCopia(){
+  var texto = editor2.getValue();
   var url='http://localhost:3080/Copia';
 
-  $.post(url,{contenido:""},function(data,status){
+  $.post(url,{contenido:texto},function(data,status){
     if(status.toString()=="success"){
-      var Contenido2=data;
+      var cont=data;
 
     alert("Se ha Analizado la copia Correctamente");
       

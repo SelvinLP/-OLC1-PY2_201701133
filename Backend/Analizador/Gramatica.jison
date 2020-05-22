@@ -4,6 +4,8 @@
     let CL_Instruccion=require('../AST/Instrucciones/L_Instrucciones');
     let CL_Error=require('../AST/Errores/L_Error');
     let CNodoError=require('../AST/Errores/Nodo_Error');
+
+    let LCopia=require('../AST/L_Copia');
 %}
 
 /*------------------------------------------------PARTE LEXICA--------------------------------------------------- */
@@ -115,13 +117,16 @@ INICIO:
     tk_import tk_id tk_puntoycoma INICIO                                {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($4);
                                                                         var Ins= new CNodo_Instruccion.Nodo_Instruccion("import",$2,yylineno); $$.AgregarHijo(Ins);}
     | tk_class tk_id tk_llavei METODOS tk_llaved INICIO                 {$$ = new CNodo_Instruccion.Nodo_Instruccion("Instruccion","",yylineno); $$.Agregar($6);
-                                                                        var Ins = new CNodo_Instruccion.Nodo_Instruccion("class",$2,yylineno); $$.AgregarHijo(Ins); Ins.AgregarHijo($4);}  
+                                                                        var Ins = new CNodo_Instruccion.Nodo_Instruccion("class",$2,yylineno); $$.AgregarHijo(Ins); Ins.AgregarHijo($4);
+                                                                        LCopia.L_Copia.add(Ins); 
+                                                                        }  
     | %empty                                                            {$$=null}
 ;
 
 METODOS:
     tk_void tk_id tk_pabre PARAMETROFUNCION tk_pcierra tk_llavei SENTENCIA tk_llaved METODOS        {$$ = new CNodo_Instruccion.Nodo_Instruccion("Metodo",$2,yylineno); $$.AgregarHijo($4); 
                                                                                                     if($4!=null){$4.Agregar($7);}else{ $$.AgregarHijo($7);} $$.Agregar($9);
+
                                                                                                      }
     | TIPODATO tk_id tk_pabre PARAMETROFUNCION tk_pcierra tk_llavei SENTENCIA tk_llaved METODOS     {$$ = new CNodo_Instruccion.Nodo_Instruccion("Funcion",$2,yylineno); $$.AgregarHijo($4); 
                                                                                                     if($4!=null){$4.Agregar($7);}else{ $$.AgregarHijo($7);} $$.Agregar($9);

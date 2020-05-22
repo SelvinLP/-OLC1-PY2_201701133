@@ -1,9 +1,9 @@
-import { Nodo_Copia } from "./Nodo_Copia";
-class L_Copia extends Array<Nodo_Copia>{
+import { Nodo_Instruccion } from "./Instrucciones/Nodo_Instruccion";
+class L_Copia extends Array<Nodo_Instruccion>{
     constructor(){
         super();
     }
-    public static add(nuevoC:Nodo_Copia){
+    public static add(nuevoC:Nodo_Instruccion){
         this.prototype.push(nuevoC);
     }
 

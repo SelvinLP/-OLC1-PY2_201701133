@@ -7,13 +7,14 @@ var Nodo_Copia = /** @class */ (function () {
         this.Tipo = descripcion;
     }
     Nodo_Copia.prototype.addChild = function (nuevoH) {
-        this.Hijos.push(nuevoH);
+        if (nuevoH != null) {
+            this.Hijos.push(nuevoH);
+        }
     };
-    Nodo_Copia.prototype.getTipo = function () {
-        return this.Tipo;
-    };
-    Nodo_Copia.prototype.getNombre = function () {
-        return this.Nombre;
+    Nodo_Copia.prototype.addHermano = function (nuevoH) {
+        if (nuevoH != null) {
+            this.Hermano = nuevoH;
+        }
     };
     return Nodo_Copia;
 }());

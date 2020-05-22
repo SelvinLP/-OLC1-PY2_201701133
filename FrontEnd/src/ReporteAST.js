@@ -33,3 +33,17 @@ function MostrarR(contenido) {
     var texto=contenido;
     nueva_ventana.document.write(texto);
 }
+
+//Reporte Copia
+function MostrarReporte_C(){
+    var url='http://localhost:3080/R_Copia';
+  
+    $.post(url,DATAORIGINAL,function(data,status){
+      if(status.toString()=="success"){
+        var inf=data;
+     }
+    });
+} 
+document.getElementById("R_Copia").onclick=function(){
+    MostrarReporte_C();
+}
