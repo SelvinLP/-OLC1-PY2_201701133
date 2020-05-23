@@ -83,7 +83,6 @@ function ComprobacionCopia() {
                             //VALIDACION DE VARIABLES
                             if(funciones.JsonHijo!=null){
                                 if(funciones.JsonHijo.Tipo=="Parametros"){
-                                    console.log("se puede analizar parametros");
                                     var Parametros=funciones.JsonHijo.JsonHijo;
                                     while(Parametros!=null){
                                         CopiaVariables.push([Parametros.Nombre,Parametros.JsonHermano.Nombre]);
@@ -98,7 +97,23 @@ function ComprobacionCopia() {
                                         var L_Instrucciones=funciones.JsonHijo.JsonHermano.JsonHijo;
                                         while(L_Instrucciones!=null){
                                             if(L_Instrucciones.Nombre=="Declaracion"){
-                                                CopiaVariablesEntorno.push([L_Instrucciones.JsonHijo.Nombre,L_Instrucciones.JsonHijo.JsonHermano.Nombre]);
+                                                //Validacion para la copia
+                                                if(ciclofunccopia.JsonHijo!=null){
+                                                    if(ciclofunccopia.JsonHijo.Tipo=="Parametros"){
+                                                        if(ciclofunccopia.JsonHijo.JsonHermano!=null){
+                                                            var L_InstruccionesCopia=ciclofunccopia.JsonHijo.JsonHermano.JsonHijo;
+                                                            while(L_InstruccionesCopia!=null){
+                                                                if(L_InstruccionesCopia.Nombre=="Declaracion"){
+                                                                    if(L_Instrucciones.JsonHijo.Nombre==L_InstruccionesCopia.JsonHijo.Nombre && L_Instrucciones.JsonHijo.JsonHermano.Nombre==L_InstruccionesCopia.JsonHijo.JsonHermano.Nombre){
+                                                                        CopiaVariablesEntorno.push([L_Instrucciones.JsonHijo.Nombre,L_Instrucciones.JsonHijo.JsonHermano.Nombre]);
+                                                                    }
+                                                                }
+                                                                L_InstruccionesCopia=L_InstruccionesCopia.JsonHermano;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                //CopiaVariablesEntorno.push([L_Instrucciones.JsonHijo.Nombre,L_Instrucciones.JsonHijo.JsonHermano.Nombre]);
                                             }
                                             L_Instrucciones=L_Instrucciones.JsonHermano;
                                         }
@@ -108,7 +123,21 @@ function ComprobacionCopia() {
                                     var L_Instrucciones=funciones.JsonHijo.JsonHijo;
                                     while(L_Instrucciones!=null){
                                         if(L_Instrucciones.Nombre=="Declaracion"){
-                                            CopiaVariablesEntorno.push([L_Instrucciones.JsonHijo.Nombre,L_Instrucciones.JsonHijo.JsonHermano.Nombre]);
+                                            //Validacion para la copia
+                                            if(ciclofunccopia.JsonHijo!=null){
+                                                if(ciclofunccopia.JsonHijo.Tipo!="Parametros"){
+                                                    var L_InstruccionesCopia=ciclofunccopia.JsonHijo.JsonHijo
+                                                    while(L_InstruccionesCopia!=null){
+                                                        if(L_InstruccionesCopia.Nombre=="Declaracion"){
+                                                            if(L_Instrucciones.JsonHijo.Nombre==L_InstruccionesCopia.JsonHijo.Nombre && L_Instrucciones.JsonHijo.JsonHermano.Nombre==L_InstruccionesCopia.JsonHijo.JsonHermano.Nombre){
+                                                                CopiaVariablesEntorno.push([L_Instrucciones.JsonHijo.Nombre,L_Instrucciones.JsonHijo.JsonHermano.Nombre]);
+
+                                                            }
+                                                        }
+                                                        L_InstruccionesCopia=L_InstruccionesCopia.JsonHermano;
+                                                    }
+                                                }
+                                            }
                                         }
                                         L_Instrucciones=L_Instrucciones.JsonHermano;
                                     }
@@ -135,10 +164,6 @@ function ComprobacionCopia() {
 
     //Mostramos Copias
     return GenerarHTML()
-}
-
-function Variables(){
-
 }
 
 function GenerarHTML(){
