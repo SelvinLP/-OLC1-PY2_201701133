@@ -137,7 +137,7 @@ class prueba_2{
         potencia(0.1,5);
     }
 }
-class prueba_2{
+class prueba_3{
 
     int switch2(){
         int a,b,c,d,g,j,l = 8;

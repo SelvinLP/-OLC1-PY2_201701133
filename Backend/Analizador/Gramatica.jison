@@ -128,7 +128,7 @@ METODOS:
                                                                                                     if($4!=null){$4.Agregar($7);}else{ $$.AgregarHijo($7);} $$.Agregar($9);
 
                                                                                                      }
-    | TIPODATO tk_id tk_pabre PARAMETROFUNCION tk_pcierra tk_llavei SENTENCIA tk_llaved METODOS     {$$ = new CNodo_Instruccion.Nodo_Instruccion("Funcion",$2,yylineno); $$.AgregarHijo($4); 
+    | TIPODATO tk_id tk_pabre PARAMETROFUNCION tk_pcierra tk_llavei SENTENCIA tk_llaved METODOS     {$$ = new CNodo_Instruccion.Nodo_Instruccion($1.Nombre+" Funcion",$2,yylineno); $$.AgregarHijo($4); 
                                                                                                     if($4!=null){$4.Agregar($7);}else{ $$.AgregarHijo($7);} $$.Agregar($9);
                                                                                                      }
     | %empty                                                                                        {$$=null;}
@@ -277,6 +277,7 @@ VALOR:
                             var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","booleano: ",yylineno); $$.AgregarHijo(Exp);}
     | tk_caracter           {$$ = new CNodo_Instruccion.Nodo_Instruccion("Expresion","",yylineno);
                             var Exp = new CNodo_Instruccion.Nodo_Instruccion("Primitivo","caracter",yylineno); $$.AgregarHijo(Exp);}
+    | tk_pabre VALOR tk_pcierra     {$$=$2}
 ;
 
 ARITMETICAS:

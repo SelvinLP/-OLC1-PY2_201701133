@@ -37,11 +37,14 @@ function MostrarR(contenido) {
 //Reporte Copia
 function MostrarReporte_C(){
     var url='http://localhost:3080/R_Copia';
-  
-    $.post(url,DATAORIGINAL,function(data,status){
+
+    $.post(url,"",function(data,status){
       if(status.toString()=="success"){
         var inf=data;
-     }
+        var nueva_ventana = window.open('../Reporte_Copia.html','_blank');
+        var texto=inf;
+        nueva_ventana.document.write(texto);
+        }
     });
 } 
 document.getElementById("R_Copia").onclick=function(){
